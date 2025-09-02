@@ -1,5 +1,9 @@
 import { Injectable } from "@angular/core";
+
+import { LS_DAILY_GOAL, LS_DAILY_PROGRESS, LS_PREMISES_DOWN_THRESHOLD, LS_PREMISES_UP_THRESHOLD, LS_RETEST_QUEUE, LS_TRAINING_UNIT, LS_TRAINING_UNIT_LENGTH, LS_WEEKLY_GOAL } from "../constants/local-storage.constants";
+
 import { LS_DAILY_GOAL, LS_DAILY_PROGRESS, LS_MAX_PASSES, LS_PASS_LENGTH, LS_PREMISES_DOWN_THRESHOLD, LS_PREMISES_UP_THRESHOLD, LS_TRAINING_UNIT, LS_TRAINING_UNIT_LENGTH, LS_WEEKLY_GOAL } from "../constants/local-storage.constants";
+
 import { EnumQuestionType } from "../constants/question.constants";
 import { QUESTION_TYPE_SETTING_PARAMS } from "../constants/settings.constants";
 
@@ -16,6 +20,12 @@ export interface ITrainingUnit {
     right: number;
     timeout: number;
     wrong: number;
+}
+
+export interface IRetestItem {
+    type: EnumQuestionType;
+    premises: number;
+    dueDate: string;
 }
 
 @Injectable({
@@ -176,6 +186,33 @@ export class ProgressAndPerformanceService {
         };
     }
 
+
+    getRetestQueue() {
+        const ls = localStorage.getItem(LS_RETEST_QUEUE);
+        if (!ls) {
+            return [] as IRetestItem[];
+        }
+        return JSON.parse(ls) as IRetestItem[];
+    }
+
+    private saveRetestQueue(queue: IRetestItem[]) {
+        localStorage.setItem(LS_RETEST_QUEUE, JSON.stringify(queue));
+    }
+
+    addRetest(item: IRetestItem) {
+        const queue = this.getRetestQueue();
+        queue.push(item);
+        this.saveRetestQueue(queue);
+    }
+
+    getNextDueRetest(today: string = this.getToday()) {
+        return this.getRetestQueue().find(r => r.dueDate <= today);
+    }
+
+    completeRetest(item: IRetestItem) {
+        const queue = this.getRetestQueue().filter(r => !(r.type === item.type && r.premises === item.premises && r.dueDate === item.dueDate));
+        this.saveRetestQueue(queue);
+
     getPassSettings() {
         const passLengthLS = localStorage.getItem(LS_PASS_LENGTH);
         const passLength = Number(passLengthLS) || DEFAULT_PASS_LENGTH;
@@ -193,5 +230,6 @@ export class ProgressAndPerformanceService {
             this.consecutiveCorrectAnswers = 0;
         }
         return this.consecutiveCorrectAnswers;
+
     }
 }

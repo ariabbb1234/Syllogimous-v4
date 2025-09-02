@@ -8,7 +8,7 @@ import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { ModalLevelChangeComponent } from "../components/modal-level-change/modal-level-change.component";
 import { Router } from "@angular/router";
 import { canGenerateQuestion, QuestionSettings, Settings } from "../models/settings.models";
-import { ProgressAndPerformanceService } from "./progress-and-performance.service";
+import { ProgressAndPerformanceService, IRetestItem } from "./progress-and-performance.service";
 import { guid } from "src/app/utils/uuid";
 import { EnumArrangements, EnumQuestionType } from "../constants/question.constants";
 import { EnumQuestionGroup, QUESTION_TYPE_SETTING_PARAMS } from "../constants/settings.constants";
@@ -24,6 +24,7 @@ export class SyllogimousService {
     question;
     playgroundSettings?: Settings;
     logger = new Logger("info", true);
+    currentRetest?: IRetestItem;
 
     get score() {
         return this._score;
@@ -178,7 +179,12 @@ export class SyllogimousService {
     }
 
     play() {
-        this.question = this.createRandomQuestion();
+        this.currentRetest = this.progressAndPerformanceService.getNextDueRetest();
+        if (this.currentRetest) {
+            this.question = this.getCreateFn(this.currentRetest.type, this.currentRetest.premises)();
+        } else {
+            this.question = this.createRandomQuestion();
+        }
         if (this.playgroundSettings) {
             this.router.navigate([EnumScreens.Game]);
         } else {
@@ -288,6 +294,13 @@ export class SyllogimousService {
             this.progressAndPerformanceService.getToday(),
             this.question.answeredAt - this.question.createdAt
         );
+
+        if (this.currentRetest) {
+            this.progressAndPerformanceService.completeRetest(this.currentRetest);
+            this.currentRetest = undefined;
+        }
+
+        this.router.navigate([EnumScreens.Feedback]);
 
         const result = value == null
             ? 'timeout'

@@ -4,6 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { IDynamicField } from 'src/app/shared/components/dynamic-form/dynamic-form.component';
 import { areSettingsInvalid, QuestionSettings, Settings } from 'src/app/syllogimous/models/settings.models';
 import { SyllogimousService } from 'src/app/syllogimous/services/syllogimous.service';
+import { ProgressAndPerformanceService, IRetestItem } from 'src/app/syllogimous/services/progress-and-performance.service';
 import { EnumScreens } from '../../constants/syllogimous.constants';
 import { EnumQuestionType } from '../../constants/question.constants';
 import { LS_PG_SETTINGS } from '../../constants/local-storage.constants';
@@ -31,17 +32,20 @@ export class PlaygroundModeComponent {
     genericEnables: [string, boolean][];
     binaryEnables: [string, boolean][];
     questionControls: [string, QuestionSettings][];
+    upcomingRetests: IRetestItem[] = [];
 
     constructor(
         public router: Router,
         private modalService: NgbModal,
         private sylSrv: SyllogimousService,
+        private progressSrv: ProgressAndPerformanceService,
     ) {
         const settings = this.loadPlaygroundSettings() || new Settings();
 
         this.genericEnables = Object.entries(settings.enabled).filter(([field]) => field !== "binary") as [string, boolean][];
         this.binaryEnables = Object.entries(settings.enabled.binary);
         this.questionControls = Object.entries(settings.question);
+        this.loadRetests();
 
         // Create generic boolean controls
         for (const [field, value] of this.genericEnables) {
@@ -91,6 +95,15 @@ export class PlaygroundModeComponent {
                 value,
             });
         }
+    }
+
+    loadRetests() {
+        this.upcomingRetests = this.progressSrv.getRetestQueue().sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+    }
+
+    completeRetest(item: IRetestItem) {
+        this.progressSrv.completeRetest(item);
+        this.loadRetests();
     }
 
     async play(content: any) {
