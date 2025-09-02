@@ -84,6 +84,35 @@
                 </div>
             </div>
         </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header py-2 small">Test settings</div>
+            <div class="card-body">
+                <div class="d-grid" style="gap: 0.75rem;">
+                    <app-input
+                        type="number"
+                        min="1"
+                        max="50"
+                        step="1"
+                        name="passLength"
+                        [label]="'Pass length: ' + passLength.value + ' questions'"
+                        [ngControl]="passLength"
+                        [noParenthesisValue]="true"
+                    ></app-input>
+
+                    <app-input
+                        type="number"
+                        min="1"
+                        max="20"
+                        step="1"
+                        name="maxPasses"
+                        [label]="'Max passes per session: ' + maxPasses.value"
+                        [ngControl]="maxPasses"
+                        [noParenthesisValue]="true"
+                    ></app-input>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div footer class="playcard-toolbar">

@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { EnumScreens } from '../../constants/syllogimous.constants';
 import { FormControl } from '@angular/forms';
-import { DEFAULT_DAILY_GOAL, DEFAULT_PREMISES_DOWN_THRESHOLD, DEFAULT_PREMISES_UP_THRESHOLD, DEFAULT_TRAINING_UNIT_LENGTH, DEFAULT_WEEKLY_GOAL, ProgressAndPerformanceService } from '../../services/progress-and-performance.service';
-import { LS_DAILY_GOAL, LS_PREMISES_DOWN_THRESHOLD, LS_PREMISES_UP_THRESHOLD, LS_TRAINING_UNIT_LENGTH, LS_WEEKLY_GOAL } from '../../constants/local-storage.constants';
+import { DEFAULT_DAILY_GOAL, DEFAULT_MAX_PASSES, DEFAULT_PASS_LENGTH, DEFAULT_PREMISES_DOWN_THRESHOLD, DEFAULT_PREMISES_UP_THRESHOLD, DEFAULT_TRAINING_UNIT_LENGTH, DEFAULT_WEEKLY_GOAL, ProgressAndPerformanceService } from '../../services/progress-and-performance.service';
+import { LS_DAILY_GOAL, LS_MAX_PASSES, LS_PASS_LENGTH, LS_PREMISES_DOWN_THRESHOLD, LS_PREMISES_UP_THRESHOLD, LS_TRAINING_UNIT_LENGTH, LS_WEEKLY_GOAL } from '../../constants/local-storage.constants';
 import { SyllogimousService } from '../../services/syllogimous.service';
 
 @Component({
@@ -21,6 +21,8 @@ export class SettingsComponent {
     trainingUnitLength = new FormControl(DEFAULT_TRAINING_UNIT_LENGTH);
     premisesUpThreshold = new FormControl(DEFAULT_PREMISES_UP_THRESHOLD);
     premisesDownThreshold = new FormControl(DEFAULT_PREMISES_DOWN_THRESHOLD);
+    passLength = new FormControl(DEFAULT_PASS_LENGTH);
+    maxPasses = new FormControl(DEFAULT_MAX_PASSES);
 
     constructor(
         public router: Router,
@@ -52,6 +54,15 @@ export class SettingsComponent {
         this.premisesDownThreshold.setValue(premisesDownThreshold);
         this.premisesDownThreshold.valueChanges
             .subscribe(v => localStorage.setItem(LS_PREMISES_DOWN_THRESHOLD, String(v)));
+
+        const { passLength, maxPasses } = this.progressAndPerformanceService.getPassSettings();
+        this.passLength.setValue(passLength);
+        this.passLength.valueChanges
+            .subscribe(v => localStorage.setItem(LS_PASS_LENGTH, String(v)));
+
+        this.maxPasses.setValue(maxPasses);
+        this.maxPasses.valueChanges
+            .subscribe(v => localStorage.setItem(LS_MAX_PASSES, String(v)));
     }
 
 }

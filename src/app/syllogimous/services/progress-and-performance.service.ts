@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { LS_DAILY_GOAL, LS_DAILY_PROGRESS, LS_PREMISES_DOWN_THRESHOLD, LS_PREMISES_UP_THRESHOLD, LS_TRAINING_UNIT, LS_TRAINING_UNIT_LENGTH, LS_WEEKLY_GOAL } from "../constants/local-storage.constants";
+import { LS_DAILY_GOAL, LS_DAILY_PROGRESS, LS_MAX_PASSES, LS_PASS_LENGTH, LS_PREMISES_DOWN_THRESHOLD, LS_PREMISES_UP_THRESHOLD, LS_TRAINING_UNIT, LS_TRAINING_UNIT_LENGTH, LS_WEEKLY_GOAL } from "../constants/local-storage.constants";
 import { EnumQuestionType } from "../constants/question.constants";
 import { QUESTION_TYPE_SETTING_PARAMS } from "../constants/settings.constants";
 
@@ -8,6 +8,8 @@ export const DEFAULT_WEEKLY_GOAL = 120;
 export const DEFAULT_TRAINING_UNIT_LENGTH = 10;
 export const DEFAULT_PREMISES_UP_THRESHOLD = 0.9;
 export const DEFAULT_PREMISES_DOWN_THRESHOLD = 0.5;
+export const DEFAULT_PASS_LENGTH = 12;
+export const DEFAULT_MAX_PASSES = 3;
 
 export interface ITrainingUnit {
     premises: number;
@@ -20,6 +22,7 @@ export interface ITrainingUnit {
     providedIn: 'root'
 })
 export class ProgressAndPerformanceService {
+    private consecutiveCorrectAnswers = 0;
     get DAILY_GOAL() {
         const dailyLS = localStorage.getItem(LS_DAILY_GOAL);
         return Number(dailyLS || DEFAULT_DAILY_GOAL) * 60 * 1000;
@@ -171,5 +174,24 @@ export class ProgressAndPerformanceService {
             percentageTimeout,
             percentageWrong
         };
+    }
+
+    getPassSettings() {
+        const passLengthLS = localStorage.getItem(LS_PASS_LENGTH);
+        const passLength = Number(passLengthLS) || DEFAULT_PASS_LENGTH;
+
+        const maxPassesLS = localStorage.getItem(LS_MAX_PASSES);
+        const maxPasses = Number(maxPassesLS) || DEFAULT_MAX_PASSES;
+
+        return { passLength, maxPasses };
+    }
+
+    recordAnswer(result: 'right' | 'wrong' | 'timeout') {
+        if (result === 'right') {
+            this.consecutiveCorrectAnswers++;
+        } else {
+            this.consecutiveCorrectAnswers = 0;
+        }
+        return this.consecutiveCorrectAnswers;
     }
 }
