@@ -30,6 +30,23 @@
         </div>
 
         <div class="card shadow-sm">
+            <div class="card-header py-2 small">Upcoming Retests</div>
+            <div class="card-body">
+                <ng-container *ngIf="upcomingRetests.length; else noRetests">
+                    <ul class="list-unstyled mb-0">
+                        <li *ngFor="let r of upcomingRetests" class="d-flex justify-content-between align-items-center">
+                            <span>{{ r.type }} ({{ r.premises }}p) - {{ r.dueDate }}</span>
+                            <button class="btn btn-sm btn-outline-success" (click)="completeRetest(r)">Done</button>
+                        </li>
+                    </ul>
+                </ng-container>
+                <ng-template #noRetests>
+                    <div class="text-muted">No retests scheduled.</div>
+                </ng-template>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
             <div class="card-header py-2 small">Questions and premises</div>
             <div class="card-body">
                 <app-dynamic-form

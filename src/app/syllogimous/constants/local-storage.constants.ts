@@ -14,6 +14,7 @@ export const LS_TRAINING_UNIT_LENGTH = "SYL_TRAINING_UNIT_LENGTH";
 export const LS_PREMISES_UP_THRESHOLD = "SYL_PREMISES_UP_THRESHOLD";
 export const LS_PREMISES_DOWN_THRESHOLD = "SYL_PREMISES_DOWN_THRESHOLD";
 export const LS_SCORE = "SYL_SCORE";
+export const LS_RETEST_QUEUE = "SYL_RETEST_QUEUE";
 
 export const LS_PROPS = [
     LS_HISTORY,
@@ -27,6 +28,7 @@ export const LS_PROPS = [
     LS_PREMISES_UP_THRESHOLD,
     LS_PREMISES_DOWN_THRESHOLD,
     LS_SCORE,
+    LS_RETEST_QUEUE,
 ];
 
 for (const screen of Object.values(EnumScreens)) {
