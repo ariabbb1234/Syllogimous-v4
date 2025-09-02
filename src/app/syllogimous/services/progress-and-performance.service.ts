@@ -110,7 +110,11 @@ export class ProgressAndPerformanceService {
 
     getTrainingUnitSettings() {
         const trainingUnitLengthLS = localStorage.getItem(LS_TRAINING_UNIT_LENGTH);
-        const trainingUnitLength = Number(trainingUnitLengthLS) || DEFAULT_TRAINING_UNIT_LENGTH;
+        let trainingUnitLength = Number(trainingUnitLengthLS);
+        if (!Number.isFinite(trainingUnitLength)) {
+            trainingUnitLength = DEFAULT_TRAINING_UNIT_LENGTH;
+        }
+        trainingUnitLength = Math.max(1, Math.min(30, Math.round(trainingUnitLength)));
 
         const premisesDownThresholdLS = localStorage.getItem(LS_PREMISES_DOWN_THRESHOLD);
         const premisesDownThreshold = Number(premisesDownThresholdLS) || DEFAULT_PREMISES_DOWN_THRESHOLD;
@@ -170,8 +174,7 @@ export class ProgressAndPerformanceService {
     }
 
     calcTrainingUnitPercentages(type: EnumQuestionType) {
-        const trainingUnitLengthLS = localStorage.getItem(LS_TRAINING_UNIT_LENGTH);
-        const trainingUnitLength = Number(trainingUnitLengthLS) || DEFAULT_TRAINING_UNIT_LENGTH;
+        const { trainingUnitLength } = this.getTrainingUnitSettings();
         const { right, timeout, wrong } = this.getTrainingUnit(type);
         const percentageRight = Math.max(0, Math.min(1, right / trainingUnitLength)) * 100;
         const percentageTimeout = Math.max(0, Math.min(1, timeout / trainingUnitLength)) * 100;

@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { EnumScreens } from '../../constants/syllogimous.constants';
+import { FormControl, Validators } from '@angular/forms';
+import { DEFAULT_DAILY_GOAL, DEFAULT_PREMISES_DOWN_THRESHOLD, DEFAULT_PREMISES_UP_THRESHOLD, DEFAULT_TRAINING_UNIT_LENGTH, DEFAULT_WEEKLY_GOAL, ProgressAndPerformanceService } from '../../services/progress-and-performance.service';
+import { LS_DAILY_GOAL, LS_PREMISES_DOWN_THRESHOLD, LS_PREMISES_UP_THRESHOLD, LS_TRAINING_UNIT_LENGTH, LS_WEEKLY_GOAL } from '../../constants/local-storage.constants';
 import { FormControl } from '@angular/forms';
 import { DEFAULT_DAILY_GOAL, DEFAULT_MAX_PASSES, DEFAULT_PASS_LENGTH, DEFAULT_PREMISES_DOWN_THRESHOLD, DEFAULT_PREMISES_UP_THRESHOLD, DEFAULT_TRAINING_UNIT_LENGTH, DEFAULT_WEEKLY_GOAL, ProgressAndPerformanceService } from '../../services/progress-and-performance.service';
 import { LS_DAILY_GOAL, LS_MAX_PASSES, LS_PASS_LENGTH, LS_PREMISES_DOWN_THRESHOLD, LS_PREMISES_UP_THRESHOLD, LS_TRAINING_UNIT_LENGTH, LS_WEEKLY_GOAL } from '../../constants/local-storage.constants';
@@ -18,7 +21,9 @@ export class SettingsComponent {
     dailyProgressMinutes = new FormControl(DEFAULT_DAILY_GOAL);
     weeklyProgressMinutes = new FormControl(DEFAULT_WEEKLY_GOAL);
 
-    trainingUnitLength = new FormControl(DEFAULT_TRAINING_UNIT_LENGTH);
+    trainingUnitLength = new FormControl(DEFAULT_TRAINING_UNIT_LENGTH, [
+        Validators.min(1)
+    ]);
     premisesUpThreshold = new FormControl(DEFAULT_PREMISES_UP_THRESHOLD);
     premisesDownThreshold = new FormControl(DEFAULT_PREMISES_DOWN_THRESHOLD);
     passLength = new FormControl(DEFAULT_PASS_LENGTH);
