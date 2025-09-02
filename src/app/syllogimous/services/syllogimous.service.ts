@@ -208,7 +208,7 @@ export class SyllogimousService {
         this.router.navigate([EnumScreens.Game]);
     }
 
-    async checkQuestion(value?: boolean) {
+    async checkQuestion(value?: boolean, suppressFeedback = false) {
         this.question.userAnswer = value;
         this.question.answeredAt = Date.now();
         this.question.timerTypeOnAnswer = localStorage.getItem(LS_TIMER) || "0";
@@ -301,6 +301,15 @@ export class SyllogimousService {
         }
 
         this.router.navigate([EnumScreens.Feedback]);
+
+        const result = value == null
+            ? 'timeout'
+            : (isQuestionValid ? 'right' : 'wrong');
+        this.progressAndPerformanceService.recordAnswer(result);
+
+        if (!suppressFeedback) {
+            this.router.navigate([EnumScreens.Feedback]);
+        }
     }
 
     createSyllogism(numOfPremises: number) {
